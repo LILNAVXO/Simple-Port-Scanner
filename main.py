@@ -26,6 +26,18 @@ class PortScanner:
                 if is_open:
                     open_ports.append(port)
         return open_ports
+    def scan_with_protocols(self):
+        open_ports_protocols = []
+        for port in self.scan():
+            try:
+                protocol = socket.getservbyport(port, "tcp")
+            except OSError:
+                protocol = "Unknown"
+            except Exception as e:
+                print(f"An error occurred: {e}")
+                protocol = "Unknown"
+            open_ports_protocols.append((port, protocol))
+        return open_ports_protocols
 
 if __name__ == "__main__":
     target = input("Enter Target IP address or HostName: ")
@@ -33,7 +45,7 @@ if __name__ == "__main__":
     port_range = (int(port_range[0]), int(port_range[1]))
     scanner = PortScanner(target, port_range)
     print(f"Scanning {target} for Open ports in range {port_range[0]} to {port_range[1]}...\n")
-    open_ports = scanner.scan()
+    open_ports = scanner.scan_with_protocols()
 
     if open_ports:
         print(f"Open Ports: {open_ports}")
